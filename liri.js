@@ -12,23 +12,6 @@ var request = require('request');
 var fs = require('fs');
 
 
-var firstArg = process.argv[2];
-var secondArg = process.argv[3];
-
-
-var check = function(){
-
-
-	if (firstArg === 'spotify-this-song' && secondArg == undefined){
-		getSpotify('The Sign');
-	}
-	else if(firstArg === 'movie-this' && secondArg == undefined){
-		getMovie('Mr. Nobody');
-	}
-};
-
-
- 
 
 //===Twitter Function===============================================
 
@@ -61,6 +44,10 @@ var getArtistNames = function(artist) {
 
 var getSpotify = function(songName) { 
 
+	if(songName == null){
+		songName = 'The Sign';
+	}
+
 	var spotify = new Spotify(keys.spotify);
  
 	spotify.search({ type: 'track', query: songName }, function(err, data) {
@@ -90,6 +77,10 @@ var getSpotify = function(songName) {
 
 var getMovie = function(movieName) {
 
+	if(movieName == null){
+		movieName = 'Mr. Nobody';
+	}
+
 	request("http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy",function(error,response,body){
 		if (!error && response.statusCode === 200){
 
@@ -113,49 +104,37 @@ var getMovie = function(movieName) {
 
 var doWhatItSays = function(){
 	fs.readFile("random.txt", "utf8", function(error, data) {
-
-	//console.log('Im in Function');
+  	
   	if (error) {
     	return console.log(error);
   	}else{
 
   	var dataArr = data.split(",");
-  	for (var i=0; i<=dataArr.length; i++) { console.log(i,dataArr[i]); }
   	//console.log(dataArr);
+
+  	if (dataArr.length == 2) {
+  		command(dataArr[0], dataArr[1]);
+  	} 	else if (dataArr.length ==1){
+  		command(dataArr[0]);
+  	}	
   	
-  	
-  	
-  	command(dataArr[0], dataArr[1]);
 
 		};
 	});
 };
+ 
 
-
-
-  // 	if (dataArr.length == 2) {
-  // 		command(dataArr[0], dataArr[1]);
-  // 	} 	else if (dataArr.length ==1){
-  // 		command(dataArr[0]);
-  // 	}	
-
-
-  // });
-
-
-
-var command = function(firstEntry,secondEntry) {
-	if (firstArg === 'my-tweets'){
+var command = function(chosenCommand, searchThis) {
+	if (chosenCommand === 'my-tweets'){
 		getTweets();
 	}
-	else if (firstArg === 'spotify-this-song'){
-		getSpotify(secondArg);
+	else if (chosenCommand === 'spotify-this-song'){
+		getSpotify(searchThis);
 	}
-	else if (firstArg === 'movie-this'){
-		getMovie(secondArg);
+	else if (chosenCommand === 'movie-this'){
+		getMovie(searchThis);
 	}
-	else if (firstArg === 'do-what-it-says'){
-		//console.log('Im here');
+	else if (chosenCommand === 'do-what-it-says'){
 		doWhatItSays();
 	}
 	else{
@@ -171,36 +150,11 @@ var runThis = function(argOne, argTwo) {
 
   runThis(process.argv[2], process.argv[3]);
 
-command();
-check();
 
 
 
 
-// var command = function(caseData, functionData) {
-// 	switch(caseData) {
-// 		case 'my-tweets' :
-// 			getTweets();
-// 			break;
-// 		case 'spotify-this-song':
-// 			getSpotify(functionData);
-// 			break;
-// 		case 'movie-this':
-// 			getMovie(functionData);
-// 			break;
-// 		case 'do-what-it-says':
-// 			doWhatItSays();
-// 			break;
-// 		default:
-// 		console.log('Liri does not know that')
-// 	}
-// }
 
-// var runThis = function(argOne, argTwo) {
-// 	command(argOne, argTwo);
-//  };
-
-//  runThis(process.argv[2], process.argv[3]);
 
 
 
